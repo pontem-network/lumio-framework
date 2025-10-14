@@ -1,5 +1,5 @@
 [package]
-name = "aptos-move-stdlib"
+name = "lumio-move-stdlib"
 version = "0.1.1"
 edition = "2021"
 authors = ["Diem Association <opensource@diem.com>"]
@@ -11,46 +11,24 @@ publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-cstd.workspace = true
-either.workspace = true
-anyhow.workspace = true
-aptos-gas-schedule.workspace = true
-aptos-native-interface.workspace = true
-move-binary-format.workspace = true
-move-core-types.workspace = true
-move-vm-runtime.workspace = true
-move-vm-types.workspace = true
-smallvec.workspace = true
-hex.workspace = true
-sha2.workspace = true
-sha3.workspace = true
-
-#move-docgen.workspace = true
-#move-errmapgen.workspace = true
-#move-prover.workspace = true
-#log.workspace = true
-#walkdir.workspace = true
-#move-command-line-common.workspace = true
-#move-compiler.workspace = true
+lumio-gas-schedule = { workspace = true }
+lumio-native-interface = { workspace = true }
+lumio-types = { workspace = true }
+bcs = { workspace = true }
+move-core-types = { workspace = true }
+move-vm-runtime = { workspace = true }
+move-vm-types = { workspace = true }
+sha2 = { workspace = true }
+sha3 = { workspace = true }
+smallvec = { workspace = true }
 
 [dev-dependencies]
-# local
-move-cli.workspace = true
-move-package.workspace = true
-move-unit-test.workspace = true
-
-dir-diff.workspace = true
-file_diff.workspace = true
-tempfile.workspace = true
+dir-diff = "0.3.2"
+file_diff = "1.0.0"
+move-cli = { workspace = true }
+move-package = { workspace = true }
+move-unit-test = { workspace = true }
+tempfile = { workspace = true }
 
 [features]
 testing = []
-std = [
-    "cstd/std",
-    "aptos-gas-schedule/std",
-    "aptos-native-interface/std",
-    "move-binary-format/std",
-    "move-core-types/std",
-    "move-vm-runtime/std",
-    "move-vm-types/std",
-]

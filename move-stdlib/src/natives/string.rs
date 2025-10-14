@@ -1,4 +1,5 @@
 // Copyright © Aptos Foundation
+// SPDX-License-Identifier: Apache-2.0
 
 // Copyright (c) The Diem Core Contributors
 // Copyright (c) The Move Contributors
@@ -6,12 +7,10 @@
 
 //! Implementation of native functions for utf8 strings.
 
-use aptos_gas_schedule::gas_params::natives::move_stdlib::*;
-use aptos_native_interface::{
+use lumio_gas_schedule::gas_params::natives::move_stdlib::*;
+use lumio_native_interface::{
     safely_pop_arg, RawSafeNative, SafeNativeBuilder, SafeNativeContext, SafeNativeResult,
 };
-use cstd::collections::VecDeque;
-use cstd::prelude::*;
 use move_core_types::gas_algebra::NumBytes;
 use move_vm_runtime::native_functions::NativeFunction;
 use move_vm_types::{
@@ -19,6 +18,7 @@ use move_vm_types::{
     values::{Value, VectorRef},
 };
 use smallvec::{smallvec, SmallVec};
+use std::collections::VecDeque;
 
 // The implementation approach delegates all utf8 handling to Rust.
 // This is possible without copying of bytes because (a) we can
@@ -48,7 +48,7 @@ fn native_check_utf8(
             + STRING_CHECK_UTF8_PER_BYTE * NumBytes::new(s_ref.as_slice().len() as u64),
     )?;
 
-    let ok = cstd::str::from_utf8(s_ref.as_slice()).is_ok();
+    let ok = std::str::from_utf8(s_ref.as_slice()).is_ok();
     // TODO: extensible native cost tables
 
     Ok(smallvec![Value::bool(ok)])
@@ -74,7 +74,7 @@ fn native_is_char_boundary(
     let s_ref = s_arg.as_bytes_ref();
     let ok = unsafe {
         // This is safe because we guarantee the bytes to be utf8.
-        cstd::str::from_utf8_unchecked(s_ref.as_slice()).is_char_boundary(i as usize)
+        std::str::from_utf8_unchecked(s_ref.as_slice()).is_char_boundary(i as usize)
     };
 
     Ok(smallvec![Value::bool(ok)])
@@ -100,7 +100,7 @@ fn native_sub_string(
 
     if j < i {
         // TODO: The abort code should follow the error convention.
-        return Err(aptos_native_interface::SafeNativeError::Abort { abort_code: 1 });
+        return Err(lumio_native_interface::SafeNativeError::Abort { abort_code: 1 });
     }
 
     context.charge(STRING_SUB_STRING_PER_BYTE * NumBytes::new((j - i) as u64))?;
@@ -109,7 +109,7 @@ fn native_sub_string(
     let s_ref = s_arg.as_bytes_ref();
     let s_str = unsafe {
         // This is safe because we guarantee the bytes to be utf8.
-        cstd::str::from_utf8_unchecked(s_ref.as_slice())
+        std::str::from_utf8_unchecked(s_ref.as_slice())
     };
     let v = Value::vector_u8(s_str[i..j].as_bytes().iter().cloned());
 
@@ -133,13 +133,13 @@ fn native_index_of(
 
     let r_arg = safely_pop_arg!(args, VectorRef);
     let r_ref = r_arg.as_bytes_ref();
-    let r_str = unsafe { cstd::str::from_utf8_unchecked(r_ref.as_slice()) };
+    let r_str = unsafe { std::str::from_utf8_unchecked(r_ref.as_slice()) };
 
     context.charge(STRING_INDEX_OF_PER_BYTE_PATTERN * NumBytes::new(r_str.len() as u64))?;
 
     let s_arg = safely_pop_arg!(args, VectorRef);
     let s_ref = s_arg.as_bytes_ref();
-    let s_str = unsafe { cstd::str::from_utf8_unchecked(s_ref.as_slice()) };
+    let s_str = unsafe { std::str::from_utf8_unchecked(s_ref.as_slice()) };
     let pos = match s_str.find(r_str) {
         Some(size) => size,
         None => s_str.len(),

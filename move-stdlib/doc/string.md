@@ -1,5 +1,5 @@
 
-<a name="0x1_string"></a>
+<a id="0x1_string"></a>
 
 # Module `0x1::string`
 
@@ -35,7 +35,7 @@ The <code><a href="string.md#0x1_string">string</a></code> module defines the <c
 
 
 
-<a name="0x1_string_String"></a>
+<a id="0x1_string_String"></a>
 
 ## Struct `String`
 
@@ -63,12 +63,12 @@ A <code><a href="string.md#0x1_string_String">String</a></code> holds a sequence
 
 </details>
 
-<a name="@Constants_0"></a>
+<a id="@Constants_0"></a>
 
 ## Constants
 
 
-<a name="0x1_string_EINVALID_INDEX"></a>
+<a id="0x1_string_EINVALID_INDEX"></a>
 
 Index out of range.
 
@@ -78,7 +78,7 @@ Index out of range.
 
 
 
-<a name="0x1_string_EINVALID_UTF8"></a>
+<a id="0x1_string_EINVALID_UTF8"></a>
 
 An invalid UTF8 encoding.
 
@@ -88,7 +88,7 @@ An invalid UTF8 encoding.
 
 
 
-<a name="0x1_string_utf8"></a>
+<a id="0x1_string_utf8"></a>
 
 ## Function `utf8`
 
@@ -114,7 +114,7 @@ Creates a new string from a sequence of bytes. Aborts if the bytes do not repres
 
 </details>
 
-<a name="0x1_string_try_utf8"></a>
+<a id="0x1_string_try_utf8"></a>
 
 ## Function `try_utf8`
 
@@ -143,14 +143,14 @@ Tries to create a new string from a sequence of bytes.
 
 </details>
 
-<a name="0x1_string_bytes"></a>
+<a id="0x1_string_bytes"></a>
 
 ## Function `bytes`
 
 Returns a reference to the underlying byte vector.
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_bytes">bytes</a>(s: &<a href="string.md#0x1_string_String">string::String</a>): &<a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_bytes">bytes</a>(self: &<a href="string.md#0x1_string_String">string::String</a>): &<a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;
 </code></pre>
 
 
@@ -159,8 +159,8 @@ Returns a reference to the underlying byte vector.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_bytes">bytes</a>(s: &<a href="string.md#0x1_string_String">String</a>): &<a href="vector.md#0x1_vector">vector</a>&lt;u8&gt; {
-    &s.bytes
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_bytes">bytes</a>(self: &<a href="string.md#0x1_string_String">String</a>): &<a href="vector.md#0x1_vector">vector</a>&lt;u8&gt; {
+    &self.bytes
 }
 </code></pre>
 
@@ -168,14 +168,14 @@ Returns a reference to the underlying byte vector.
 
 </details>
 
-<a name="0x1_string_is_empty"></a>
+<a id="0x1_string_is_empty"></a>
 
 ## Function `is_empty`
 
 Checks whether this string is empty.
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_is_empty">is_empty</a>(s: &<a href="string.md#0x1_string_String">string::String</a>): bool
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_is_empty">is_empty</a>(self: &<a href="string.md#0x1_string_String">string::String</a>): bool
 </code></pre>
 
 
@@ -184,8 +184,8 @@ Checks whether this string is empty.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_is_empty">is_empty</a>(s: &<a href="string.md#0x1_string_String">String</a>): bool {
-    <a href="vector.md#0x1_vector_is_empty">vector::is_empty</a>(&s.bytes)
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_is_empty">is_empty</a>(self: &<a href="string.md#0x1_string_String">String</a>): bool {
+    self.bytes.<a href="string.md#0x1_string_is_empty">is_empty</a>()
 }
 </code></pre>
 
@@ -193,14 +193,14 @@ Checks whether this string is empty.
 
 </details>
 
-<a name="0x1_string_length"></a>
+<a id="0x1_string_length"></a>
 
 ## Function `length`
 
 Returns the length of this string, in bytes.
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_length">length</a>(s: &<a href="string.md#0x1_string_String">string::String</a>): u64
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_length">length</a>(self: &<a href="string.md#0x1_string_String">string::String</a>): u64
 </code></pre>
 
 
@@ -209,8 +209,8 @@ Returns the length of this string, in bytes.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_length">length</a>(s: &<a href="string.md#0x1_string_String">String</a>): u64 {
-    <a href="vector.md#0x1_vector_length">vector::length</a>(&s.bytes)
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_length">length</a>(self: &<a href="string.md#0x1_string_String">String</a>): u64 {
+    self.bytes.<a href="string.md#0x1_string_length">length</a>()
 }
 </code></pre>
 
@@ -218,14 +218,14 @@ Returns the length of this string, in bytes.
 
 </details>
 
-<a name="0x1_string_append"></a>
+<a id="0x1_string_append"></a>
 
 ## Function `append`
 
 Appends a string.
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_append">append</a>(s: &<b>mut</b> <a href="string.md#0x1_string_String">string::String</a>, r: <a href="string.md#0x1_string_String">string::String</a>)
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_append">append</a>(self: &<b>mut</b> <a href="string.md#0x1_string_String">string::String</a>, r: <a href="string.md#0x1_string_String">string::String</a>)
 </code></pre>
 
 
@@ -234,8 +234,8 @@ Appends a string.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_append">append</a>(s: &<b>mut</b> <a href="string.md#0x1_string_String">String</a>, r: <a href="string.md#0x1_string_String">String</a>) {
-    <a href="vector.md#0x1_vector_append">vector::append</a>(&<b>mut</b> s.bytes, r.bytes)
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_append">append</a>(self: &<b>mut</b> <a href="string.md#0x1_string_String">String</a>, r: <a href="string.md#0x1_string_String">String</a>) {
+    self.bytes.<a href="string.md#0x1_string_append">append</a>(r.bytes)
 }
 </code></pre>
 
@@ -243,14 +243,14 @@ Appends a string.
 
 </details>
 
-<a name="0x1_string_append_utf8"></a>
+<a id="0x1_string_append_utf8"></a>
 
 ## Function `append_utf8`
 
 Appends bytes which must be in valid utf8 format.
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_append_utf8">append_utf8</a>(s: &<b>mut</b> <a href="string.md#0x1_string_String">string::String</a>, bytes: <a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;)
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_append_utf8">append_utf8</a>(self: &<b>mut</b> <a href="string.md#0x1_string_String">string::String</a>, bytes: <a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;)
 </code></pre>
 
 
@@ -259,8 +259,8 @@ Appends bytes which must be in valid utf8 format.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_append_utf8">append_utf8</a>(s: &<b>mut</b> <a href="string.md#0x1_string_String">String</a>, bytes: <a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;) {
-    <a href="string.md#0x1_string_append">append</a>(s, <a href="string.md#0x1_string_utf8">utf8</a>(bytes))
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_append_utf8">append_utf8</a>(self: &<b>mut</b> <a href="string.md#0x1_string_String">String</a>, bytes: <a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;) {
+    self.<a href="string.md#0x1_string_append">append</a>(<a href="string.md#0x1_string_utf8">utf8</a>(bytes))
 }
 </code></pre>
 
@@ -268,7 +268,7 @@ Appends bytes which must be in valid utf8 format.
 
 </details>
 
-<a name="0x1_string_insert"></a>
+<a id="0x1_string_insert"></a>
 
 ## Function `insert`
 
@@ -276,7 +276,7 @@ Insert the other string at the byte index in given string. The index must be at 
 boundary.
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_insert">insert</a>(s: &<b>mut</b> <a href="string.md#0x1_string_String">string::String</a>, at: u64, o: <a href="string.md#0x1_string_String">string::String</a>)
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_insert">insert</a>(self: &<b>mut</b> <a href="string.md#0x1_string_String">string::String</a>, at: u64, o: <a href="string.md#0x1_string_String">string::String</a>)
 </code></pre>
 
 
@@ -285,15 +285,15 @@ boundary.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_insert">insert</a>(s: &<b>mut</b> <a href="string.md#0x1_string_String">String</a>, at: u64, o: <a href="string.md#0x1_string_String">String</a>) {
-    <b>let</b> bytes = &s.bytes;
-    <b>assert</b>!(at &lt;= <a href="vector.md#0x1_vector_length">vector::length</a>(bytes) && <a href="string.md#0x1_string_internal_is_char_boundary">internal_is_char_boundary</a>(bytes, at), <a href="string.md#0x1_string_EINVALID_INDEX">EINVALID_INDEX</a>);
-    <b>let</b> l = <a href="string.md#0x1_string_length">length</a>(s);
-    <b>let</b> front = <a href="string.md#0x1_string_sub_string">sub_string</a>(s, 0, at);
-    <b>let</b> end = <a href="string.md#0x1_string_sub_string">sub_string</a>(s, at, l);
-    <a href="string.md#0x1_string_append">append</a>(&<b>mut</b> front, o);
-    <a href="string.md#0x1_string_append">append</a>(&<b>mut</b> front, end);
-    *s = front;
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_insert">insert</a>(self: &<b>mut</b> <a href="string.md#0x1_string_String">String</a>, at: u64, o: <a href="string.md#0x1_string_String">String</a>) {
+    <b>let</b> bytes = &self.bytes;
+    <b>assert</b>!(at &lt;= bytes.<a href="string.md#0x1_string_length">length</a>() && <a href="string.md#0x1_string_internal_is_char_boundary">internal_is_char_boundary</a>(bytes, at), <a href="string.md#0x1_string_EINVALID_INDEX">EINVALID_INDEX</a>);
+    <b>let</b> l = self.<a href="string.md#0x1_string_length">length</a>();
+    <b>let</b> front = self.<a href="string.md#0x1_string_sub_string">sub_string</a>(0, at);
+    <b>let</b> end = self.<a href="string.md#0x1_string_sub_string">sub_string</a>(at, l);
+    front.<a href="string.md#0x1_string_append">append</a>(o);
+    front.<a href="string.md#0x1_string_append">append</a>(end);
+    *self = front;
 }
 </code></pre>
 
@@ -301,7 +301,7 @@ boundary.
 
 </details>
 
-<a name="0x1_string_sub_string"></a>
+<a id="0x1_string_sub_string"></a>
 
 ## Function `sub_string`
 
@@ -310,7 +310,7 @@ of the first byte not included (or the length of the string). The indices must b
 guaranteeing that the result is valid utf8.
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_sub_string">sub_string</a>(s: &<a href="string.md#0x1_string_String">string::String</a>, i: u64, j: u64): <a href="string.md#0x1_string_String">string::String</a>
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_sub_string">sub_string</a>(self: &<a href="string.md#0x1_string_String">string::String</a>, i: u64, j: u64): <a href="string.md#0x1_string_String">string::String</a>
 </code></pre>
 
 
@@ -319,9 +319,9 @@ guaranteeing that the result is valid utf8.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_sub_string">sub_string</a>(s: &<a href="string.md#0x1_string_String">String</a>, i: u64, j: u64): <a href="string.md#0x1_string_String">String</a> {
-    <b>let</b> bytes = &s.bytes;
-    <b>let</b> l = <a href="vector.md#0x1_vector_length">vector::length</a>(bytes);
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_sub_string">sub_string</a>(self: &<a href="string.md#0x1_string_String">String</a>, i: u64, j: u64): <a href="string.md#0x1_string_String">String</a> {
+    <b>let</b> bytes = &self.bytes;
+    <b>let</b> l = bytes.<a href="string.md#0x1_string_length">length</a>();
     <b>assert</b>!(
         j &lt;= l && i &lt;= j && <a href="string.md#0x1_string_internal_is_char_boundary">internal_is_char_boundary</a>(bytes, i) && <a href="string.md#0x1_string_internal_is_char_boundary">internal_is_char_boundary</a>(bytes, j),
         <a href="string.md#0x1_string_EINVALID_INDEX">EINVALID_INDEX</a>
@@ -334,14 +334,14 @@ guaranteeing that the result is valid utf8.
 
 </details>
 
-<a name="0x1_string_index_of"></a>
+<a id="0x1_string_index_of"></a>
 
 ## Function `index_of`
 
 Computes the index of the first occurrence of a string. Returns <code><a href="string.md#0x1_string_length">length</a>(s)</code> if no occurrence found.
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_index_of">index_of</a>(s: &<a href="string.md#0x1_string_String">string::String</a>, r: &<a href="string.md#0x1_string_String">string::String</a>): u64
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_index_of">index_of</a>(self: &<a href="string.md#0x1_string_String">string::String</a>, r: &<a href="string.md#0x1_string_String">string::String</a>): u64
 </code></pre>
 
 
@@ -350,8 +350,8 @@ Computes the index of the first occurrence of a string. Returns <code><a href="s
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_index_of">index_of</a>(s: &<a href="string.md#0x1_string_String">String</a>, r: &<a href="string.md#0x1_string_String">String</a>): u64 {
-    <a href="string.md#0x1_string_internal_index_of">internal_index_of</a>(&s.bytes, &r.bytes)
+<pre><code><b>public</b> <b>fun</b> <a href="string.md#0x1_string_index_of">index_of</a>(self: &<a href="string.md#0x1_string_String">String</a>, r: &<a href="string.md#0x1_string_String">String</a>): u64 {
+    <a href="string.md#0x1_string_internal_index_of">internal_index_of</a>(&self.bytes, &r.bytes)
 }
 </code></pre>
 
@@ -359,7 +359,7 @@ Computes the index of the first occurrence of a string. Returns <code><a href="s
 
 </details>
 
-<a name="0x1_string_internal_check_utf8"></a>
+<a id="0x1_string_internal_check_utf8"></a>
 
 ## Function `internal_check_utf8`
 
@@ -381,7 +381,7 @@ Computes the index of the first occurrence of a string. Returns <code><a href="s
 
 </details>
 
-<a name="0x1_string_internal_is_char_boundary"></a>
+<a id="0x1_string_internal_is_char_boundary"></a>
 
 ## Function `internal_is_char_boundary`
 
@@ -403,7 +403,7 @@ Computes the index of the first occurrence of a string. Returns <code><a href="s
 
 </details>
 
-<a name="0x1_string_internal_sub_string"></a>
+<a id="0x1_string_internal_sub_string"></a>
 
 ## Function `internal_sub_string`
 
@@ -425,7 +425,7 @@ Computes the index of the first occurrence of a string. Returns <code><a href="s
 
 </details>
 
-<a name="0x1_string_internal_index_of"></a>
+<a id="0x1_string_internal_index_of"></a>
 
 ## Function `internal_index_of`
 
@@ -447,12 +447,12 @@ Computes the index of the first occurrence of a string. Returns <code><a href="s
 
 </details>
 
-<a name="@Specification_1"></a>
+<a id="@Specification_1"></a>
 
 ## Specification
 
 
-<a name="@Specification_1_internal_check_utf8"></a>
+<a id="@Specification_1_internal_check_utf8"></a>
 
 ### Function `internal_check_utf8`
 
@@ -470,7 +470,7 @@ Computes the index of the first occurrence of a string. Returns <code><a href="s
 
 
 
-<a name="@Specification_1_internal_is_char_boundary"></a>
+<a id="@Specification_1_internal_is_char_boundary"></a>
 
 ### Function `internal_is_char_boundary`
 
@@ -488,7 +488,7 @@ Computes the index of the first occurrence of a string. Returns <code><a href="s
 
 
 
-<a name="@Specification_1_internal_sub_string"></a>
+<a id="@Specification_1_internal_sub_string"></a>
 
 ### Function `internal_sub_string`
 
@@ -506,7 +506,7 @@ Computes the index of the first occurrence of a string. Returns <code><a href="s
 
 
 
-<a name="@Specification_1_internal_index_of"></a>
+<a id="@Specification_1_internal_index_of"></a>
 
 ### Function `internal_index_of`
 
@@ -525,7 +525,7 @@ Computes the index of the first occurrence of a string. Returns <code><a href="s
 
 
 
-<a name="0x1_string_spec_utf8"></a>
+<a id="0x1_string_spec_utf8"></a>
 
 
 <pre><code><b>fun</b> <a href="string.md#0x1_string_spec_utf8">spec_utf8</a>(bytes: <a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;): <a href="string.md#0x1_string_String">String</a> {
@@ -536,17 +536,17 @@ Computes the index of the first occurrence of a string. Returns <code><a href="s
 
 
 
-<a name="0x1_string_spec_internal_check_utf8"></a>
+<a id="0x1_string_spec_internal_check_utf8"></a>
 
 
 <pre><code><b>fun</b> <a href="string.md#0x1_string_spec_internal_check_utf8">spec_internal_check_utf8</a>(v: <a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;): bool;
-<a name="0x1_string_spec_internal_is_char_boundary"></a>
+<a id="0x1_string_spec_internal_is_char_boundary"></a>
 <b>fun</b> <a href="string.md#0x1_string_spec_internal_is_char_boundary">spec_internal_is_char_boundary</a>(v: <a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;, i: u64): bool;
-<a name="0x1_string_spec_internal_sub_string"></a>
+<a id="0x1_string_spec_internal_sub_string"></a>
 <b>fun</b> <a href="string.md#0x1_string_spec_internal_sub_string">spec_internal_sub_string</a>(v: <a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;, i: u64, j: u64): <a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;;
-<a name="0x1_string_spec_internal_index_of"></a>
+<a id="0x1_string_spec_internal_index_of"></a>
 <b>fun</b> <a href="string.md#0x1_string_spec_internal_index_of">spec_internal_index_of</a>(v: <a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;, r: <a href="vector.md#0x1_vector">vector</a>&lt;u8&gt;): u64;
 </code></pre>
 
 
-[move-book]: https://aptos.dev/move/book/SUMMARY
+[move-book]: https://lumio.dev/move/book/SUMMARY

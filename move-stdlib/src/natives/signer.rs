@@ -1,21 +1,21 @@
 // Copyright © Aptos Foundation
+// SPDX-License-Identifier: Apache-2.0
 
 // Copyright (c) The Diem Core Contributors
 // Copyright (c) The Move Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-use aptos_gas_schedule::gas_params::natives::move_stdlib::*;
-use aptos_native_interface::{
+use lumio_gas_schedule::gas_params::natives::move_stdlib::*;
+use lumio_native_interface::{
     safely_pop_arg, RawSafeNative, SafeNativeBuilder, SafeNativeContext, SafeNativeResult,
 };
-use cstd::collections::VecDeque;
-use cstd::prelude::*;
 use move_vm_runtime::native_functions::NativeFunction;
 use move_vm_types::{
     loaded_data::runtime_types::Type,
     values::{values_impl::SignerRef, Value},
 };
 use smallvec::{smallvec, SmallVec};
+use std::collections::VecDeque;
 
 /***************************************************************************************************
  * native fun borrow_address

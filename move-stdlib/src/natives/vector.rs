@@ -1,322 +1,116 @@
 // Copyright © Aptos Foundation
+// SPDX-License-Identifier: Apache-2.0
 
 // Copyright (c) The Diem Core Contributors
 // Copyright (c) The Move Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::natives::helpers::make_module_natives;
-use cstd::prelude::*;
-use cstd::{collections::VecDeque, sync::Arc};
-use move_binary_format::errors::{PartialVMError, PartialVMResult};
-use move_core_types::{
-    gas_algebra::{InternalGas, InternalGasPerAbstractMemoryUnit},
-    vm_status::StatusCode,
+//! Implementation of native functions (non-bytecode instructions) for vector.
+
+use lumio_gas_schedule::gas_params::natives::move_stdlib::{
+    VECTOR_MOVE_RANGE_BASE, VECTOR_MOVE_RANGE_PER_INDEX_MOVED,
 };
-use move_vm_runtime::native_functions::{NativeContext, NativeFunction};
+use lumio_native_interface::{
+    safely_pop_arg, RawSafeNative, SafeNativeBuilder, SafeNativeContext, SafeNativeError,
+    SafeNativeResult,
+};
+use lumio_types::error;
+use move_core_types::gas_algebra::NumArgs;
+use move_vm_runtime::native_functions::NativeFunction;
 use move_vm_types::{
     loaded_data::runtime_types::Type,
-    natives::function::NativeResult,
-    pop_arg,
-    values::{Value, Vector, VectorRef},
-    views::ValueView,
+    values::{Value, VectorRef},
 };
+use smallvec::{smallvec, SmallVec};
+use std::collections::VecDeque;
+
+/// Given input positions/lengths are outside of vector boundaries.
+pub const EINDEX_OUT_OF_BOUNDS: u64 = 1;
+
+/// The feature is not enabled.
+pub const EFEATURE_NOT_ENABLED: u64 = 2;
 
 /***************************************************************************************************
- * native fun empty
+ * native fun move_range<T>(from: &mut vector<T>, removal_position: u64, length: u64, to: &mut vector<T>, insert_position: u64)
  *
- *   gas cost: base_cost
- *
- **************************************************************************************************/
-#[derive(Debug, Clone)]
-pub struct EmptyGasParameters {
-    pub base: InternalGas,
-}
-
-pub fn native_empty(
-    gas_params: &EmptyGasParameters,
-    _context: &mut NativeContext,
-    ty_args: Vec<Type>,
-    args: VecDeque<Value>,
-) -> PartialVMResult<NativeResult> {
-    debug_assert!(ty_args.len() == 1);
-    debug_assert!(args.is_empty());
-
-    NativeResult::map_partial_vm_result_one(gas_params.base, Vector::empty(&ty_args[0]))
-}
-
-pub fn make_native_empty(gas_params: EmptyGasParameters) -> NativeFunction {
-    Arc::new(
-        move |context, ty_args, args| -> PartialVMResult<NativeResult> {
-            native_empty(&gas_params, context, ty_args, args)
-        },
-    )
-}
-
-/***************************************************************************************************
- * native fun length
- *
- *   gas cost: base_cost
+ *   gas cost: VECTOR_MOVE_RANGE_BASE + VECTOR_MOVE_RANGE_PER_INDEX_MOVED * num_elements_to_move
  *
  **************************************************************************************************/
-#[derive(Debug, Clone)]
-pub struct LengthGasParameters {
-    pub base: InternalGas,
-}
-
-pub fn native_length(
-    gas_params: &LengthGasParameters,
-    _context: &mut NativeContext,
+fn native_move_range(
+    context: &mut SafeNativeContext,
     ty_args: Vec<Type>,
     mut args: VecDeque<Value>,
-) -> PartialVMResult<NativeResult> {
-    debug_assert!(ty_args.len() == 1);
-    debug_assert!(args.len() == 1);
-
-    let r = pop_arg!(args, VectorRef);
-    NativeResult::map_partial_vm_result_one(gas_params.base, r.len(&ty_args[0]))
-}
-
-pub fn make_native_length(gas_params: LengthGasParameters) -> NativeFunction {
-    Arc::new(
-        move |context, ty_args, args| -> PartialVMResult<NativeResult> {
-            native_length(&gas_params, context, ty_args, args)
-        },
-    )
-}
-
-/***************************************************************************************************
- * native fun push_back
- *
- *   gas cost: base_cost + legacy_unit_cost * max(1, size_of(val))
- *
- **************************************************************************************************/
-#[derive(Debug, Clone)]
-pub struct PushBackGasParameters {
-    pub base: InternalGas,
-    pub legacy_per_abstract_memory_unit: InternalGasPerAbstractMemoryUnit,
-}
-
-pub fn native_push_back(
-    gas_params: &PushBackGasParameters,
-    _context: &mut NativeContext,
-    ty_args: Vec<Type>,
-    mut args: VecDeque<Value>,
-) -> PartialVMResult<NativeResult> {
-    debug_assert!(ty_args.len() == 1);
-    debug_assert!(args.len() == 2);
-
-    let e = args.pop_back().unwrap();
-    let r = pop_arg!(args, VectorRef);
-
-    let mut cost = gas_params.base;
-    if gas_params.legacy_per_abstract_memory_unit != 0.into() {
-        cost += gas_params.legacy_per_abstract_memory_unit
-            * std::cmp::max(e.legacy_abstract_memory_size(), 1.into());
+) -> SafeNativeResult<SmallVec<[Value; 1]>> {
+    if !context
+        .get_feature_flags()
+        .is_native_memory_operations_enabled()
+    {
+        return Err(SafeNativeError::Abort {
+            abort_code: error::unavailable(EFEATURE_NOT_ENABLED),
+        });
     }
 
-    NativeResult::map_partial_vm_result_empty(cost, r.push_back(e, &ty_args[0]))
-}
+    context.charge(VECTOR_MOVE_RANGE_BASE)?;
 
-pub fn make_native_push_back(gas_params: PushBackGasParameters) -> NativeFunction {
-    Arc::new(
-        move |context, ty_args, args| -> PartialVMResult<NativeResult> {
-            native_push_back(&gas_params, context, ty_args, args)
-        },
-    )
-}
-
-/***************************************************************************************************
- * native fun borrow
- *
- *   gas cost: base_cost
- *
- **************************************************************************************************/
-#[derive(Debug, Clone)]
-pub struct BorrowGasParameters {
-    pub base: InternalGas,
-}
-
-pub fn native_borrow(
-    gas_params: &BorrowGasParameters,
-    _context: &mut NativeContext,
-    ty_args: Vec<Type>,
-    mut args: VecDeque<Value>,
-) -> PartialVMResult<NativeResult> {
-    debug_assert!(ty_args.len() == 1);
-    debug_assert!(args.len() == 2);
-
-    let idx = pop_arg!(args, u64) as usize;
-    let r = pop_arg!(args, VectorRef);
-    NativeResult::map_partial_vm_result_one(
-        gas_params.base,
-        r.borrow_elem(idx, &ty_args[0])
-            .map_err(native_error_to_abort),
-    )
-}
-
-pub fn make_native_borrow(gas_params: BorrowGasParameters) -> NativeFunction {
-    Arc::new(
-        move |context, ty_args, args| -> PartialVMResult<NativeResult> {
-            native_borrow(&gas_params, context, ty_args, args)
-        },
-    )
-}
-
-/***************************************************************************************************
- * native fun pop
- *
- *   gas cost: base_cost
- *
- **************************************************************************************************/
-#[derive(Debug, Clone)]
-pub struct PopBackGasParameters {
-    pub base: InternalGas,
-}
-
-pub fn native_pop_back(
-    gas_params: &PopBackGasParameters,
-    _context: &mut NativeContext,
-    ty_args: Vec<Type>,
-    mut args: VecDeque<Value>,
-) -> PartialVMResult<NativeResult> {
-    debug_assert!(ty_args.len() == 1);
-    debug_assert!(args.len() == 1);
-
-    let r = pop_arg!(args, VectorRef);
-    NativeResult::map_partial_vm_result_one(
-        gas_params.base,
-        r.pop(&ty_args[0]).map_err(native_error_to_abort),
-    )
-}
-
-pub fn make_native_pop_back(gas_params: PopBackGasParameters) -> NativeFunction {
-    Arc::new(
-        move |context, ty_args, args| -> PartialVMResult<NativeResult> {
-            native_pop_back(&gas_params, context, ty_args, args)
-        },
-    )
-}
-
-/***************************************************************************************************
- * native fun destroy_empty
- *
- *   gas cost: base_cost
- *
- **************************************************************************************************/
-#[derive(Debug, Clone)]
-pub struct DestroyEmptyGasParameters {
-    pub base: InternalGas,
-}
-
-pub fn native_destroy_empty(
-    gas_params: &DestroyEmptyGasParameters,
-    _context: &mut NativeContext,
-    ty_args: Vec<Type>,
-    mut args: VecDeque<Value>,
-) -> PartialVMResult<NativeResult> {
-    debug_assert!(ty_args.len() == 1);
-    debug_assert!(args.len() == 1);
-
-    let v = pop_arg!(args, Vector);
-    NativeResult::map_partial_vm_result_empty(
-        gas_params.base,
-        v.destroy_empty(&ty_args[0]).map_err(native_error_to_abort),
-    )
-}
-
-pub fn make_native_destroy_empty(gas_params: DestroyEmptyGasParameters) -> NativeFunction {
-    Arc::new(
-        move |context, ty_args, args| -> PartialVMResult<NativeResult> {
-            native_destroy_empty(&gas_params, context, ty_args, args)
-        },
-    )
-}
-
-/***************************************************************************************************
- * native fun swap
- **************************************************************************************************/
-#[derive(Debug, Clone)]
-pub struct SwapGasParameters {
-    pub base: InternalGas,
-}
-
-pub fn native_swap(
-    gas_params: &SwapGasParameters,
-    _context: &mut NativeContext,
-    ty_args: Vec<Type>,
-    mut args: VecDeque<Value>,
-) -> PartialVMResult<NativeResult> {
-    debug_assert!(ty_args.len() == 1);
-    debug_assert!(args.len() == 3);
-
-    let idx2 = pop_arg!(args, u64) as usize;
-    let idx1 = pop_arg!(args, u64) as usize;
-    let r = pop_arg!(args, VectorRef);
-    NativeResult::map_partial_vm_result_empty(
-        gas_params.base,
-        r.swap(idx1, idx2, &ty_args[0])
-            .map_err(native_error_to_abort),
-    )
-}
-
-pub fn make_native_swap(gas_params: SwapGasParameters) -> NativeFunction {
-    Arc::new(
-        move |context, ty_args, args| -> PartialVMResult<NativeResult> {
-            native_swap(&gas_params, context, ty_args, args)
-        },
-    )
-}
-
-fn native_error_to_abort(err: PartialVMError) -> PartialVMError {
-    let (major_status, sub_status_opt, message_opt, exec_state_opt, indices, offsets) =
-        err.all_data();
-    let new_err = match major_status {
-        StatusCode::VECTOR_OPERATION_ERROR => PartialVMError::new(StatusCode::ABORTED),
-        _ => PartialVMError::new(major_status),
+    let map_err = |_| SafeNativeError::Abort {
+        abort_code: error::invalid_argument(EINDEX_OUT_OF_BOUNDS),
     };
-    let new_err = match sub_status_opt {
-        None => new_err,
-        Some(code) => new_err.with_sub_status(code),
-    };
-    let new_err = match message_opt {
-        None => new_err,
-        Some(message) => new_err.with_message(message),
-    };
-    let new_err = match exec_state_opt {
-        None => new_err,
-        Some(stacktrace) => new_err.with_exec_state(stacktrace),
-    };
-    new_err.at_indices(indices).at_code_offsets(offsets)
+    let insert_position = usize::try_from(safely_pop_arg!(args, u64)).map_err(map_err)?;
+    let to = safely_pop_arg!(args, VectorRef);
+    let length = usize::try_from(safely_pop_arg!(args, u64)).map_err(map_err)?;
+    let removal_position = usize::try_from(safely_pop_arg!(args, u64)).map_err(map_err)?;
+    let from = safely_pop_arg!(args, VectorRef);
+
+    // We need to charge before executing, so fetching and checking sizes here.
+    // We repeat fetching and checking of the sizes inside VectorRef::move_range call as well.
+    // Not sure if possible to combine (as we are never doing charging there).
+    let to_len = to.length_as_usize(&ty_args[0])?;
+    let from_len = from.length_as_usize(&ty_args[0])?;
+
+    if removal_position
+        .checked_add(length)
+        .is_none_or(|end| end > from_len)
+        || insert_position > to_len
+    {
+        return Err(SafeNativeError::Abort {
+            abort_code: EINDEX_OUT_OF_BOUNDS,
+        });
+    }
+
+    // We are moving all elements in the range, all elements after range, and all elements after insertion point.
+    // We are counting "length" of moving block twice, as it both gets moved out and moved in.
+    // From calibration testing, this seems to be a reasonable approximation of the cost of the operation.
+    context.charge(
+        VECTOR_MOVE_RANGE_PER_INDEX_MOVED
+            * NumArgs::new(
+                (from_len - removal_position)
+                    .checked_add(to_len - insert_position)
+                    .and_then(|v| v.checked_add(length))
+                    .ok_or_else(|| SafeNativeError::Abort {
+                        abort_code: EINDEX_OUT_OF_BOUNDS,
+                    })? as u64,
+            ),
+    )?;
+
+    VectorRef::move_range(
+        &from,
+        removal_position,
+        length,
+        &to,
+        insert_position,
+        &ty_args[0],
+    )?;
+
+    Ok(smallvec![])
 }
 
 /***************************************************************************************************
  * module
  **************************************************************************************************/
-#[derive(Debug, Clone)]
-pub struct GasParameters {
-    pub empty: EmptyGasParameters,
-    pub length: LengthGasParameters,
-    pub push_back: PushBackGasParameters,
-    pub borrow: BorrowGasParameters,
-    pub pop_back: PopBackGasParameters,
-    pub destroy_empty: DestroyEmptyGasParameters,
-    pub swap: SwapGasParameters,
-}
+pub fn make_all(
+    builder: &SafeNativeBuilder,
+) -> impl Iterator<Item = (String, NativeFunction)> + '_ {
+    let natives = [("move_range", native_move_range as RawSafeNative)];
 
-pub fn make_all(gas_params: GasParameters) -> impl Iterator<Item = (String, NativeFunction)> {
-    let natives = [
-        ("empty", make_native_empty(gas_params.empty)),
-        ("length", make_native_length(gas_params.length)),
-        ("push_back", make_native_push_back(gas_params.push_back)),
-        ("borrow", make_native_borrow(gas_params.borrow.clone())),
-        ("borrow_mut", make_native_borrow(gas_params.borrow)),
-        ("pop_back", make_native_pop_back(gas_params.pop_back)),
-        (
-            "destroy_empty",
-            make_native_destroy_empty(gas_params.destroy_empty),
-        ),
-        ("swap", make_native_swap(gas_params.swap)),
-    ];
-
-    make_module_natives(natives)
+    builder.make_named_natives(natives)
 }
