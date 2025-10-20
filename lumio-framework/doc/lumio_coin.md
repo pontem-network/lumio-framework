@@ -210,7 +210,7 @@ Can only called during genesis to initialize the Lumio coin.
     <b>let</b> (burn_cap, freeze_cap, mint_cap) = <a href="coin.md#0x1_coin_initialize_with_parallelizable_supply">coin::initialize_with_parallelizable_supply</a>&lt;<a href="lumio_coin.md#0x1_lumio_coin_LumioCoin">LumioCoin</a>&gt;(
         lumio_framework,
         <a href="../../lumio-stdlib/../move-stdlib/doc/string.md#0x1_string_utf8">string::utf8</a>(b"Lumio Coin"),
-        <a href="../../lumio-stdlib/../move-stdlib/doc/string.md#0x1_string_utf8">string::utf8</a>(b"APT"),
+        <a href="../../lumio-stdlib/../move-stdlib/doc/string.md#0x1_string_utf8">string::utf8</a>(b"LUM"),
         8, // decimals
         <b>true</b>, // monitor_supply
     );
@@ -286,7 +286,7 @@ and accounts have been initialized during genesis.
 
 Can only be called during genesis for tests to grant mint capability to lumio framework and core resources
 accounts.
-Expects account and APT store to be registered before calling.
+Expects account and LUM store to be registered before calling.
 
 
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="lumio_coin.md#0x1_lumio_coin_configure_accounts_for_test">configure_accounts_for_test</a>(lumio_framework: &<a href="../../lumio-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, core_resources: &<a href="../../lumio-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, mint_cap: <a href="coin.md#0x1_coin_MintCapability">coin::MintCapability</a>&lt;<a href="lumio_coin.md#0x1_lumio_coin_LumioCoin">lumio_coin::LumioCoin</a>&gt;)
@@ -480,7 +480,7 @@ Claim the delegated mint capability and destroy the delegated token.
 
 <tr>
 <td>1</td>
-<td>The native token, APT, must be initialized during genesis.</td>
+<td>The native token, LUM, must be initialized during genesis.</td>
 <td>Medium</td>
 <td>The initialize function is only called once, during genesis.</td>
 <td>Formally verified via <a href="#high-level-req-1">initialize</a>.</td>
@@ -488,7 +488,7 @@ Claim the delegated mint capability and destroy the delegated token.
 
 <tr>
 <td>2</td>
-<td>The APT coin may only be created exactly once.</td>
+<td>The LUM coin may only be created exactly once.</td>
 <td>Medium</td>
 <td>The initialization function may only be called once.</td>
 <td>Enforced through the <a href="https://github.com/lumio-labs/lumio-core/blob/main/lumio-move/framework/lumio-framework/sources/coin.move">coin</a> module, which has been audited.</td>
@@ -496,7 +496,7 @@ Claim the delegated mint capability and destroy the delegated token.
 
 <tr>
 <td>4</td>
-<td>Any type of operation on the APT coin should fail if the user has not registered for the coin.</td>
+<td>Any type of operation on the LUM coin should fail if the user has not registered for the coin.</td>
 <td>Medium</td>
 <td>Coin operations may succeed only on valid user coin registration.</td>
 <td>Enforced through the <a href="https://github.com/lumio-labs/lumio-core/blob/main/lumio-move/framework/lumio-framework/sources/coin.move">coin</a> module, which has been audited.</td>
@@ -534,7 +534,7 @@ Claim the delegated mint capability and destroy the delegated token.
 <b>let</b> addr = <a href="../../lumio-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(lumio_framework);
 <b>aborts_if</b> addr != @lumio_framework;
 <b>aborts_if</b> !<a href="../../lumio-stdlib/../move-stdlib/doc/string.md#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(b"Lumio Coin");
-<b>aborts_if</b> !<a href="../../lumio-stdlib/../move-stdlib/doc/string.md#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(b"APT");
+<b>aborts_if</b> !<a href="../../lumio-stdlib/../move-stdlib/doc/string.md#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(b"LUM");
 <b>aborts_if</b> <b>exists</b>&lt;<a href="lumio_coin.md#0x1_lumio_coin_MintCapStore">MintCapStore</a>&gt;(addr);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="coin.md#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;<a href="lumio_coin.md#0x1_lumio_coin_LumioCoin">LumioCoin</a>&gt;&gt;(addr);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="aggregator_factory.md#0x1_aggregator_factory_AggregatorFactory">aggregator_factory::AggregatorFactory</a>&gt;(addr);

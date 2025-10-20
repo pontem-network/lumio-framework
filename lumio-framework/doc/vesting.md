@@ -4,7 +4,7 @@
 # Module `0x1::vesting`
 
 
-Simple vesting contract that allows specifying how much APT coins should be vesting in each fixed-size period. The
+Simple vesting contract that allows specifying how much LUM coins should be vesting in each fixed-size period. The
 vesting contract also comes with staking and allows shareholders to withdraw rewards anytime.
 
 Vesting schedule is represented as a vector of distributions. For example, a vesting schedule of
@@ -2262,7 +2262,7 @@ Create a vesting contract with a given configurations.
         !<a href="system_addresses.md#0x1_system_addresses_is_reserved_address">system_addresses::is_reserved_address</a>(withdrawal_address),
         <a href="../../lumio-stdlib/../move-stdlib/doc/error.md#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="vesting.md#0x1_vesting_EINVALID_WITHDRAWAL_ADDRESS">EINVALID_WITHDRAWAL_ADDRESS</a>),
     );
-    assert_account_is_registered_for_apt(withdrawal_address);
+    assert_account_is_registered_for_lum(withdrawal_address);
     <b>assert</b>!(<a href="../../lumio-stdlib/../move-stdlib/doc/vector.md#0x1_vector_length">vector::length</a>(shareholders) &gt; 0, <a href="../../lumio-stdlib/../move-stdlib/doc/error.md#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="vesting.md#0x1_vesting_ENO_SHAREHOLDERS">ENO_SHAREHOLDERS</a>));
     <b>assert</b>!(
         <a href="../../lumio-stdlib/doc/simple_map.md#0x1_simple_map_length">simple_map::length</a>(&buy_ins) == <a href="../../lumio-stdlib/../move-stdlib/doc/vector.md#0x1_vector_length">vector::length</a>(shareholders),
@@ -3009,9 +3009,9 @@ has already been terminated.
     shareholder: <b>address</b>,
     new_beneficiary: <b>address</b>,
 ) <b>acquires</b> <a href="vesting.md#0x1_vesting_VestingContract">VestingContract</a> {
-    // Verify that the beneficiary <a href="account.md#0x1_account">account</a> is set up <b>to</b> receive APT. This is a requirement so <a href="vesting.md#0x1_vesting_distribute">distribute</a>() wouldn't
-    // fail and <a href="block.md#0x1_block">block</a> all other accounts from receiving APT <b>if</b> one beneficiary is not registered.
-    assert_account_is_registered_for_apt(new_beneficiary);
+    // Verify that the beneficiary <a href="account.md#0x1_account">account</a> is set up <b>to</b> receive LUM. This is a requirement so <a href="vesting.md#0x1_vesting_distribute">distribute</a>() wouldn't
+    // fail and <a href="block.md#0x1_block">block</a> all other accounts from receiving LUM <b>if</b> one beneficiary is not registered.
+    assert_account_is_registered_for_lum(new_beneficiary);
 
     <b>let</b> vesting_contract = <b>borrow_global_mut</b>&lt;<a href="vesting.md#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
     <a href="vesting.md#0x1_vesting_verify_admin">verify_admin</a>(admin, vesting_contract);
@@ -3308,7 +3308,7 @@ This address should be deterministic for the same admin and vesting contract cre
     <a href="../../lumio-stdlib/../move-stdlib/doc/vector.md#0x1_vector_append">vector::append</a>(&<b>mut</b> seed, contract_creation_seed);
 
     <b>let</b> (account_signer, signer_cap) = <a href="account.md#0x1_account_create_resource_account">account::create_resource_account</a>(admin, seed);
-    // Register the <a href="vesting.md#0x1_vesting">vesting</a> contract <a href="account.md#0x1_account">account</a> <b>to</b> receive APT <b>as</b> it'll be sent <b>to</b> it when claiming unlocked <a href="stake.md#0x1_stake">stake</a> from
+    // Register the <a href="vesting.md#0x1_vesting">vesting</a> contract <a href="account.md#0x1_account">account</a> <b>to</b> receive LUM <b>as</b> it'll be sent <b>to</b> it when claiming unlocked <a href="stake.md#0x1_stake">stake</a> from
     // the underlying staking contract.
     <a href="coin.md#0x1_coin_register">coin::register</a>&lt;LumioCoin&gt;(&account_signer);
 
@@ -3567,7 +3567,7 @@ This address should be deterministic for the same admin and vesting contract cre
 
 <tr>
 <td>10</td>
-<td>A new vesting contract should not be allowed to have an empty list of shareholders, have a different amount of shareholders than buy-ins, and provide a withdrawal address which is either reserved or not registered for apt.</td>
+<td>A new vesting contract should not be allowed to have an empty list of shareholders, have a different amount of shareholders than buy-ins, and provide a withdrawal address which is either reserved or not registered for lum.</td>
 <td>High</td>
 <td>The create_vesting_contract function ensures that the withdrawal_address is not a reserved address, that it is registered for apt, that the list of shareholders is non-empty, and that the amount of shareholders matches the amount of buy_ins.</td>
 <td>Formally verified via <a href="#high-level-req-10">create_vesting_contract</a>.</td>

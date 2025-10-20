@@ -141,7 +141,7 @@ module lumio_framework::primary_fungible_store {
         );
     }
 
-    public fun grant_apt_permission(
+    public fun grant_lum_permission(
         master: &signer,
         permissioned: &signer,
         amount: u64

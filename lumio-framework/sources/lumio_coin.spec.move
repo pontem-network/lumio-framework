@@ -1,13 +1,13 @@
 spec lumio_framework::lumio_coin {
     /// <high-level-req>
     /// No.: 1
-    /// Requirement: The native token, APT, must be initialized during genesis.
+    /// Requirement: The native token, LUM, must be initialized during genesis.
     /// Criticality: Medium
     /// Implementation: The initialize function is only called once, during genesis.
     /// Enforcement: Formally verified via [high-level-req-1](initialize).
     ///
     /// No.: 2
-    /// Requirement: The APT coin may only be created exactly once.
+    /// Requirement: The LUM coin may only be created exactly once.
     /// Criticality: Medium
     /// Implementation: The initialization function may only be called once.
     /// Enforcement: Enforced through the [https://github.com/lumio-labs/lumio-core/blob/main/lumio-move/framework/lumio-framework/sources/coin.move](coin)
@@ -22,7 +22,7 @@ spec lumio_framework::lumio_coin {
     /// Enforcement: Verified via [high-level-req-3](initialize).
 
     /// No.: 4
-    /// Requirement: Any type of operation on the APT coin should fail if the user has not registered for the coin.
+    /// Requirement: Any type of operation on the LUM coin should fail if the user has not registered for the coin.
     /// Criticality: Medium
     /// Implementation: Coin operations may succeed only on valid user coin registration.
     /// Enforcement: Enforced through the [https://github.com/lumio-labs/lumio-core/blob/main/lumio-move/framework/lumio-framework/sources/coin.move](coin)
@@ -44,7 +44,7 @@ spec lumio_framework::lumio_coin {
         let addr = signer::address_of(lumio_framework);
         aborts_if addr != @lumio_framework;
         aborts_if !string::spec_internal_check_utf8(b"Lumio Coin");
-        aborts_if !string::spec_internal_check_utf8(b"APT");
+        aborts_if !string::spec_internal_check_utf8(b"LUM");
         aborts_if exists<MintCapStore>(addr);
         aborts_if exists<coin::CoinInfo<LumioCoin>>(addr);
         aborts_if !exists<aggregator_factory::AggregatorFactory>(addr);

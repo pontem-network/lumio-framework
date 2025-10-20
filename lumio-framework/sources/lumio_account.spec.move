@@ -107,7 +107,7 @@ spec lumio_framework::lumio_account {
 
     /// Check if the address existed.
     /// Check if the LumioCoin under the address existed.
-    spec assert_account_is_registered_for_apt(addr: address) {
+    spec assert_account_is_registered_for_lum(addr: address) {
         pragma aborts_if_is_partial;
         // aborts_if !account::spec_exists_at(addr);
         // TODO(fa_migration)
@@ -269,7 +269,7 @@ spec lumio_framework::lumio_account {
         ensures exists<lumio_framework::coin::CoinStore<CoinType>>(to);
     }
 
-    spec register_apt(account_signer: &signer) {
+    spec register_lum(account_signer: &signer) {
         // TODO: temporary mockup.
         pragma verify = false;
     }

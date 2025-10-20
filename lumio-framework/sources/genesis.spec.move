@@ -23,7 +23,7 @@ spec lumio_framework::genesis {
     ///
     /// No.: 3
     /// Requirement: The Lumio coin should be initialized during genesis and only the Lumio framework account should own
-    /// the mint and burn capabilities for the APT token.
+    /// the mint and burn capabilities for the LUM token.
     /// Criticality: Critical
     /// Implementation: Both mint and burn capabilities are wrapped inside the stake::LumioCoinCapabilities and
     /// transaction_fee::LumioCoinCapabilities resources which are stored under the lumio framework account.
@@ -100,7 +100,7 @@ spec lumio_framework::genesis {
 
     spec initialize_lumio_coin {
         // property 3: The Lumio coin should be initialized during genesis and only the Lumio framework account should
-        // own the mint and burn capabilities for the APT token.
+        // own the mint and burn capabilities for the LUM token.
         /// [high-level-req-3]
         requires !exists<stake::LumioCoinCapabilities>(@lumio_framework);
         ensures exists<stake::LumioCoinCapabilities>(@lumio_framework);

@@ -42,7 +42,7 @@ module lumio_framework::lumio_coin {
         let (burn_cap, freeze_cap, mint_cap) = coin::initialize_with_parallelizable_supply<LumioCoin>(
             lumio_framework,
             string::utf8(b"Lumio Coin"),
-            string::utf8(b"APT"),
+            string::utf8(b"LUM"),
             8, // decimals
             true, // monitor_supply
         );
@@ -69,7 +69,7 @@ module lumio_framework::lumio_coin {
 
     /// Can only be called during genesis for tests to grant mint capability to lumio framework and core resources
     /// accounts.
-    /// Expects account and APT store to be registered before calling.
+    /// Expects account and LUM store to be registered before calling.
     public(friend) fun configure_accounts_for_test(
         lumio_framework: &signer,
         core_resources: &signer,
@@ -157,8 +157,8 @@ module lumio_framework::lumio_coin {
     use lumio_framework::fungible_asset::FungibleAsset;
 
     #[test_only]
-    public fun mint_apt_fa_for_test(amount: u64): FungibleAsset acquires MintCapStore {
-        ensure_initialized_with_apt_fa_metadata_for_test();
+    public fun mint_lum_fa_for_test(amount: u64): FungibleAsset acquires MintCapStore {
+        ensure_initialized_with_lum_fa_metadata_for_test();
         coin::coin_to_fungible_asset(
             coin::mint(
                 amount,
@@ -168,7 +168,7 @@ module lumio_framework::lumio_coin {
     }
 
     #[test_only]
-    public fun ensure_initialized_with_apt_fa_metadata_for_test() {
+    public fun ensure_initialized_with_lum_fa_metadata_for_test() {
         let lumio_framework = account::create_signer_for_test(@lumio_framework);
         if (!exists<MintCapStore>(@lumio_framework)) {
             if (!aggregator_factory::aggregator_factory_exists_for_testing()) {
