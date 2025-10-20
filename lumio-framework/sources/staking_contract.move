@@ -990,10 +990,10 @@ module lumio_framework::staking_contract {
     use lumio_framework::stake::with_rewards;
 
     #[test_only]
-    const INITIAL_BALANCE: u64 = 100000000000000; // 1M APT coins with 8 decimals.
+    const INITIAL_BALANCE: u64 = 100000000000000; // 1M LUM coins with 8 decimals.
 
     #[test_only]
-    const MAXIMUM_STAKE: u64 = 100000000000000000; // 1B APT coins with 8 decimals.
+    const MAXIMUM_STAKE: u64 = 100000000000000000; // 1B LUM coins with 8 decimals.
 
     #[test_only]
     public fun setup(lumio_framework: &signer, staker: &signer, operator: &signer, initial_balance: u64) {

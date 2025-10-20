@@ -86,7 +86,7 @@ spec lumio_framework::vesting {
     /// No.: 10
     /// Requirement: A new vesting contract should not be allowed to have an empty list of shareholders, have a different
     /// amount of shareholders than buy-ins, and provide a withdrawal address which is either reserved or not registered
-    /// for apt.
+    /// for lum.
     /// Criticality: High
     /// Implementation: The create_vesting_contract function ensures that the withdrawal_address is not a reserved
     /// address, that it is registered for apt, that the list of shareholders is non-empty, and that the amount of

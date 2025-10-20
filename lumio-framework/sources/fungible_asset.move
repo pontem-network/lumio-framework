@@ -82,8 +82,8 @@ module lumio_framework::fungible_asset {
     const EALREADY_REGISTERED: u64 = 29;
     /// Fungible metadata does not exist on this account.
     const EFUNGIBLE_METADATA_EXISTENCE: u64 = 30;
-    /// Cannot register dispatch hook for APT.
-    const EAPT_NOT_DISPATCHABLE: u64 = 31;
+    /// Cannot register dispatch hook for LUM.
+    const ELUM_NOT_DISPATCHABLE: u64 = 31;
     /// Flag for Concurrent Supply not enabled
     const ECONCURRENT_BALANCE_NOT_ENABLED: u64 = 32;
     /// Provided derived_supply function type doesn't meet the signature requirement.
@@ -452,10 +452,10 @@ module lumio_framework::fungible_asset {
     inline fun register_dispatch_function_sanity_check(
         constructor_ref: &ConstructorRef,
     )  {
-        // Cannot register hook for APT.
+        // Cannot register hook for LUM.
         assert!(
             object::address_from_constructor_ref(constructor_ref) != @lumio_fungible_asset,
-            error::permission_denied(EAPT_NOT_DISPATCHABLE)
+            error::permission_denied(ELUM_NOT_DISPATCHABLE)
         );
         assert!(
             !object::can_generate_delete_ref(constructor_ref),
@@ -711,7 +711,7 @@ module lumio_framework::fungible_asset {
 
     fun has_deposit_dispatch_function(metadata: Object<Metadata>): bool acquires DispatchFunctionStore {
         let metadata_addr = object::object_address(&metadata);
-        // Short circuit on APT for better perf
+        // Short circuit on LUM for better perf
         if(metadata_addr != @lumio_fungible_asset && exists<DispatchFunctionStore>(metadata_addr)) {
             option::is_some(&borrow_global<DispatchFunctionStore>(metadata_addr).deposit_function)
         } else {
@@ -731,7 +731,7 @@ module lumio_framework::fungible_asset {
 
     fun has_withdraw_dispatch_function(metadata: Object<Metadata>): bool acquires DispatchFunctionStore {
         let metadata_addr = object::object_address(&metadata);
-        // Short circuit on APT for better perf
+        // Short circuit on LUM for better perf
         if (metadata_addr != @lumio_fungible_asset && exists<DispatchFunctionStore>(metadata_addr)) {
             option::is_some(&borrow_global<DispatchFunctionStore>(metadata_addr).withdraw_function)
         } else {
@@ -741,7 +741,7 @@ module lumio_framework::fungible_asset {
 
     fun has_balance_dispatch_function(metadata: Object<Metadata>): bool acquires DispatchFunctionStore {
         let metadata_addr = object::object_address(&metadata);
-        // Short circuit on APT for better perf
+        // Short circuit on LUM for better perf
         if (metadata_addr != @lumio_fungible_asset && exists<DispatchFunctionStore>(metadata_addr)) {
             option::is_some(&borrow_global<DispatchFunctionStore>(metadata_addr).derived_balance_function)
         } else {
@@ -750,7 +750,7 @@ module lumio_framework::fungible_asset {
     }
 
     fun has_supply_dispatch_function(metadata_addr: address): bool {
-        // Short circuit on APT for better perf
+        // Short circuit on LUM for better perf
         if (metadata_addr != @lumio_fungible_asset) {
             exists<DeriveSupply>(metadata_addr)
         } else {

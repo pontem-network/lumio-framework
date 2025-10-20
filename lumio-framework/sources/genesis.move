@@ -168,7 +168,7 @@ module lumio_framework::genesis {
 
         let core_resources = account::create_account(@core_resources);
         account::rotate_authentication_key_internal(&core_resources, core_resources_auth_key);
-        lumio_account::register_apt(&core_resources); // registers APT store
+        lumio_account::register_lum(&core_resources); // registers LUM store
         lumio_coin::configure_accounts_for_test(lumio_framework, &core_resources, mint_cap);
     }
 
@@ -534,19 +534,19 @@ module lumio_framework::genesis {
         use lumio_framework::fungible_asset::Metadata;
         use std::features;
 
-        let feature = features::get_new_accounts_default_to_fa_apt_store_feature();
+        let feature = features::get_new_accounts_default_to_fa_lum_store_feature();
         features::change_feature_flags_for_testing(lumio_framework, vector[feature], vector[]);
 
         aggregator_factory::initialize_aggregator_factory_for_test(lumio_framework);
 
         let (burn_cap, mint_cap) = lumio_coin::initialize(lumio_framework);
-        lumio_coin::ensure_initialized_with_apt_fa_metadata_for_test();
+        lumio_coin::ensure_initialized_with_lum_fa_metadata_for_test();
 
         let core_resources = account::create_account(@core_resources);
-        lumio_account::register_apt(&core_resources); // registers APT store
+        lumio_account::register_lum(&core_resources); // registers LUM store
 
-        let apt_metadata = object::address_to_object<Metadata>(@lumio_fungible_asset);
-        assert!(primary_fungible_store::primary_store_exists(@core_resources, apt_metadata), 2);
+        let lum_metadata = object::address_to_object<Metadata>(@lumio_fungible_asset);
+        assert!(primary_fungible_store::primary_store_exists(@core_resources, lum_metadata), 2);
 
         lumio_coin::configure_accounts_for_test(lumio_framework, &core_resources, mint_cap);
 

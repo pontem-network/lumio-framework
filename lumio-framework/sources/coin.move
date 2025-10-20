@@ -105,8 +105,8 @@ module lumio_framework::coin {
     /// The coin converison map is not created yet.
     const ECOIN_CONVERSION_MAP_NOT_FOUND: u64 = 27;
 
-    /// APT pairing is not eanbled yet.
-    const EAPT_PAIRING_IS_NOT_ENABLED: u64 = 28;
+    /// LUM pairing is not eanbled yet.
+    const ELUM_PAIRING_IS_NOT_ENABLED: u64 = 28;
 
     /// The decimals of the coin is too large.
     const ECOIN_DECIMALS_TOO_LARGE: u64 = 29;
@@ -304,7 +304,7 @@ module lumio_framework::coin {
         };
     }
 
-    /// Create APT pairing by passing `LumioCoin`.
+    /// Create LUM pairing by passing `LumioCoin`.
     public entry fun create_pairing<CoinType>(
         lumio_framework: &signer
     ) acquires CoinConversionMap, CoinInfo {
@@ -312,11 +312,11 @@ module lumio_framework::coin {
         create_and_return_paired_metadata_if_not_exist<CoinType>(true);
     }
 
-    inline fun is_apt<CoinType>(): bool {
+    inline fun is_lum<CoinType>(): bool {
         type_info::type_name<CoinType>() == string::utf8(b"0x1::lumio_coin::LumioCoin")
     }
 
-    inline fun create_and_return_paired_metadata_if_not_exist<CoinType>(allow_apt_creation: bool): Object<Metadata> {
+    inline fun create_and_return_paired_metadata_if_not_exist<CoinType>(allow_lum_creation: bool): Object<Metadata> {
         assert!(
             features::coin_to_fungible_asset_migration_feature_enabled(),
             error::invalid_state(EMIGRATION_FRAMEWORK_NOT_ENABLED)
@@ -325,10 +325,10 @@ module lumio_framework::coin {
         let map = borrow_global_mut<CoinConversionMap>(@lumio_framework);
         let type = type_info::type_of<CoinType>();
         if (!table::contains(&map.coin_to_fungible_asset_map, type)) {
-            let is_apt = is_apt<CoinType>();
-            assert!(!is_apt || allow_apt_creation, error::invalid_state(EAPT_PAIRING_IS_NOT_ENABLED));
+            let is_lum = is_lum<CoinType>();
+            assert!(!is_lum || allow_lum_creation, error::invalid_state(ELUM_PAIRING_IS_NOT_ENABLED));
             let metadata_object_cref =
-                if (is_apt) {
+                if (is_lum) {
                     object::create_sticky_object_at_address(@lumio_framework, @lumio_fungible_asset)
                 } else {
                     object::create_named_object(
@@ -646,7 +646,7 @@ module lumio_framework::coin {
     public entry fun migrate_coin_store_to_fungible_store<CoinType>(
         accounts: vector<address>
     ) acquires CoinStore, CoinConversionMap, CoinInfo {
-        if (features::new_accounts_default_to_fa_store_enabled() || features::new_accounts_default_to_fa_apt_store_enabled()) {
+        if (features::new_accounts_default_to_fa_store_enabled() || features::new_accounts_default_to_fa_lum_store_enabled()) {
             std::vector::for_each(accounts, |account| {
                 maybe_convert_to_fungible_store<CoinType>(account);
             });
@@ -899,7 +899,7 @@ module lumio_framework::coin {
         account_address: address,
         metadata: Object<Metadata>
     ): bool {
-        features::new_accounts_default_to_fa_store_enabled() || (features::new_accounts_default_to_fa_apt_store_enabled() && object::object_address(&metadata) == @0xa) || {
+        features::new_accounts_default_to_fa_store_enabled() || (features::new_accounts_default_to_fa_lum_store_enabled() && object::object_address(&metadata) == @0xa) || {
             let primary_store_address = primary_fungible_store::primary_store_address<Metadata>(
                 account_address,
                 metadata
@@ -2042,9 +2042,9 @@ module lumio_framework::coin {
         let bob_addr = signer::address_of(bob);
         account::create_account_for_test(account_addr);
         account::create_account_for_test(bob_addr);
-        let apt_fa_feature = features::get_new_accounts_default_to_fa_apt_store_feature();
+        let lum_fa_feature = features::get_new_accounts_default_to_fa_lum_store_feature();
         let fa_feature = features::get_new_accounts_default_to_fa_store_feature();
-        features::change_feature_flags_for_testing(account, vector[], vector[apt_fa_feature, fa_feature]);
+        features::change_feature_flags_for_testing(account, vector[], vector[lum_fa_feature, fa_feature]);
         let (burn_cap, freeze_cap, mint_cap) = initialize_and_register_fake_money(account, 1, true);
 
         assert!(coin_store_exists<FakeMoney>(account_addr), 0);

@@ -83,7 +83,7 @@ module lumio_framework::transaction_fee {
             lumio_account::burn_from_fungible_store_for_gas(burn_ref, account, fee);
         } else {
             let burn_cap = &borrow_global<LumioCoinCapabilities>(@lumio_framework).burn_cap;
-            if (features::operations_default_to_fa_apt_store_enabled()) {
+            if (features::operations_default_to_fa_lum_store_enabled()) {
                 let (burn_ref, burn_receipt) = coin::get_paired_burn_ref(burn_cap);
                 lumio_account::burn_from_fungible_store_for_gas(&burn_ref, account, fee);
                 coin::return_paired_burn_ref(burn_ref, burn_receipt);
@@ -108,7 +108,7 @@ module lumio_framework::transaction_fee {
     public(friend) fun store_lumio_coin_burn_cap(lumio_framework: &signer, burn_cap: BurnCapability<LumioCoin>) {
         system_addresses::assert_lumio_framework(lumio_framework);
 
-        if (features::operations_default_to_fa_apt_store_enabled()) {
+        if (features::operations_default_to_fa_lum_store_enabled()) {
             let burn_ref = coin::convert_and_take_paired_burn_ref(burn_cap);
             move_to(lumio_framework, LumioFABurnCapabilities { burn_ref });
         } else {
@@ -117,7 +117,7 @@ module lumio_framework::transaction_fee {
     }
 
     public entry fun convert_to_lumio_fa_burn_ref(lumio_framework: &signer) acquires LumioCoinCapabilities {
-        assert!(features::operations_default_to_fa_apt_store_enabled(), EFA_GAS_CHARGING_NOT_ENABLED);
+        assert!(features::operations_default_to_fa_lum_store_enabled(), EFA_GAS_CHARGING_NOT_ENABLED);
         system_addresses::assert_lumio_framework(lumio_framework);
         let LumioCoinCapabilities {
             burn_cap,
